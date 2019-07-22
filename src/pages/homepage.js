@@ -31,7 +31,8 @@ class LoggedInLeftColumn extends React.Component {
   getRepos() {
     axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
     .then((res) => {
-      this.setState({repos: res.data})
+      // TODO: Remove this
+      // this.setState({repos: res.data})
     })
     .catch((err) => {
       alert("Error grabbing repositories")
@@ -42,14 +43,45 @@ class LoggedInLeftColumn extends React.Component {
     return <List.Item> {item.name} </List.Item>
   }
 
+  getListHeader() {
+    return (
+      <h2> Repositories </h2>
+    )
+  }
+
+  syncRepositories() {
+    console.log("ok")
+  }
+
   render() {
     return (
       <div style={{margin: "6px 24px 6px 24px"}}>
+      {
+        this.state.repos.length == 0 ?
         <List
-          header={<h2>Repositories</h2>}
+          header={this.getListHeader()}
+          style={{textAlign: "center"}}
+        >
+          <List.Item> 
+            <h3> No repositories found! </h3>
+          </List.Item>
+          <List.Item> 
+            <Button 
+              style={{margin: "0px 5px 0px 5px"}}
+              onClick={this.syncRepositories}
+              block
+            >
+              Click here to sync
+            </Button>
+          </List.Item>
+        </List>
+        :
+        <List
+          header={this.getListHeader()}
           dataSource={this.state.repos}
           renderItem={this.renderRepo}
         />
+      }
       </div>
     )
   }
