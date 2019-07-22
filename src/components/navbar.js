@@ -27,7 +27,7 @@ class LoggedInBar extends React.Component {
   handleLogout = () => {
     const { history } = this.props;
     logout()
-    history.push('/')
+    history.push(settings.LOGOUT_REDIRECT)
   }
 
   render() {
@@ -66,7 +66,7 @@ class LoggedOutBar extends React.Component {
           if (res.data) {
             const { history } = this.props
             storeLogin(res.data)
-            history.push(settings.loginRedirect)
+            history.push(settings.LOGIN_REDIRECT)
           }
         }
       })
@@ -82,7 +82,7 @@ class LoggedOutBar extends React.Component {
 
   goHome = () => {
     const { history } = this.props;
-    history.push('/home');
+    history.push();
   }
 
   render() {

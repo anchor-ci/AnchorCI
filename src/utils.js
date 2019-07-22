@@ -19,5 +19,6 @@ const logout = () => {
 module.exports = {
   storeLogin: storeLogin,
   logout: logout,
-  loggedIn: loggedIn
+  loggedIn: loggedIn,
+  getLoginToken: getLoginToken
 }

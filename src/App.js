@@ -2,9 +2,10 @@ import React from 'react';
 import Navbar from './components/navbar.js';
 import Job from './pages/job.js';
 import Index from './pages/index.js';
-import HomePage from './pages/homepage.js';
 import ProtectedRoute from './components/protected_route.js';
-import { BrowserRouter, Route } from "react-router-dom";
+import { loggedIn } from './utils.js';
+import { LoggedInHomepage, LoggedOutHomepage } from './pages/homepage.js';
+import { BrowserRouter, Redirect, Route } from "react-router-dom";
 
 const style = {
   height: "100%",
@@ -14,13 +15,14 @@ const style = {
 }
 
 function App() {
+  const homepage = loggedIn() ? LoggedInHomepage : LoggedOutHomepage
+
   return (
     <BrowserRouter>
       <Navbar />
       <div>
-        <ProtectedRoute exact path="/home" component={HomePage} />
-        <Route exact path="/" component={Index} />
-        <Route path="/job/:jobId" component={Job} />
+        <Route exact path="/" component={homepage} />
+        <ProtectedRoute path="/job/:jobId" component={Job} />
       </div>
     </BrowserRouter>
   );
