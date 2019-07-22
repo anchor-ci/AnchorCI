@@ -50,7 +50,13 @@ class LoggedInLeftColumn extends React.Component {
   }
 
   syncRepositories() {
-    console.log("ok")
+    axios.get(`${settings.syncUrl}/${getUserId()}`)
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err.data)
+    })
   }
 
   render() {

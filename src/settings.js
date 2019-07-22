@@ -2,7 +2,7 @@ let settings = {}
 settings.env = process.env.ENV || 'local'
 
 let authUrl = {
-  local: `http://172.18.0.1:9000`
+  local: `http://172.18.0.5:9000`
 }
 
 let baseUrl = {
@@ -24,5 +24,6 @@ settings.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${s
 settings.userRepoUrl = `${settings.jobUrl}/repo/user`
 settings.loginUrl = `${settings.authUrl}/auth`
 settings.registerUrl = `${settings.authUrl}/user`
+settings.syncUrl = `${settings.authUrl}/sync`
 
 export default settings
