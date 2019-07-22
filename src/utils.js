@@ -1,24 +1,38 @@
 const _authTokenKey = 'authToken';
 
-const getLoginToken = () => {
+export const getLoginToken = () => {
   return window.localStorage.getItem(_authTokenKey);
 }
 
-const storeLogin = (token) => {
+export const getPayloadFromToken = () => {
+  let token = getLoginToken()
+
+  if (!token) {
+    return undefined
+  }
+
+  // Splits the JWT and parses the second portion
+  return JSON.parse(atob(token.split(".")[1]))
+}
+
+export const getUserId = () => {
+  let payload = getPayloadFromToken()
+
+  if (!payload) {
+    return undefined
+  } 
+
+  return payload.sub
+}
+
+export const storeLogin = (token) => {
   window.localStorage.setItem(_authTokenKey, token)
 }
 
-const loggedIn = () => {
+export const loggedIn = () => {
   return !!getLoginToken()
 }
 
-const logout = () => {
+export const logout = () => {
   window.localStorage.removeItem(_authTokenKey)
-}
-
-module.exports = {
-  storeLogin: storeLogin,
-  logout: logout,
-  loggedIn: loggedIn,
-  getLoginToken: getLoginToken
 }

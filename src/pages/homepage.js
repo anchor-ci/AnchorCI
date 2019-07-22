@@ -1,7 +1,7 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import settings from '../settings.js';
-import { getLoginToken } from '../utils.js';
+import { getUserId } from '../utils.js';
 import axios from 'axios';
 import {
   Form,
@@ -19,25 +19,36 @@ import {
 class LoggedInLeftColumn extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = { repos: [] }
+  }
+
+  componentDidMount() {
+    // Grab repositories for left column
+    this.getRepos()
   }
 
   getRepos() {
-    axios.get(`${settings.userRepoUrl}/${getLoginToken()}`, {})
+    axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
     .then((res) => {
-      console.log(res)
+      this.setState({repos: res.data})
     })
     .catch((err) => {
-      console.log(err)
+      alert("Error grabbing repositories")
     })
+  }
 
-    return []
+  renderRepo(item) {
+    return <List.Item> {item.name} </List.Item>
   }
 
   render() {
     return (
-      <div style={{margin: "6px"}}>
+      <div style={{margin: "6px 24px 6px 24px"}}>
         <List
-          dataSource={this.getRepos()}
+          header={<h2>Repositories</h2>}
+          dataSource={this.state.repos}
+          renderItem={this.renderRepo}
         />
       </div>
     )

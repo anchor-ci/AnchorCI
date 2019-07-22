@@ -10,7 +10,7 @@ let baseUrl = {
 }
 
 let jobUrl = {
-  local: `http://172.18.0.5:8080`
+  local: `http://172.18.0.6:8080`
 }
 
 settings.baseUrl = baseUrl[settings.env]
