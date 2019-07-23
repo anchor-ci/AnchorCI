@@ -3,6 +3,7 @@ import 'antd/dist/antd.css';
 import settings from '../settings.js';
 import { getUserId } from '../utils.js';
 import axios from 'axios';
+import { green, red, blue } from "@ant-design/colors"
 import {
   Form,
   Input,
@@ -13,8 +14,79 @@ import {
   Icon, 
   Modal, 
   Button,
-  List
+  List,
 } from 'antd';
+
+class SyncButton extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      loading: false,
+      text: "Click here to sync",
+      style: {
+        margin: "0px 5px 0px 5px",
+        color: "black",
+      }
+    }
+
+    this.syncRepositories = this.syncRepositories.bind(this)
+  }
+
+  syncRepositories() {
+    this.setState({loading: true})
+
+    axios.get(`${settings.syncUrl}/${getUserId()}`)
+    .then(res => {
+      this.setState({
+        text: "Done!",
+        style: {
+          margin: "0px 5px 0px 5px",
+          color: "white",
+          backgroundColor: green.primary
+        }
+      })
+    })
+    .catch(err => {
+      let fontColor = "white"
+      let color = red.primary
+      let text = "Failed to sync repositories."
+
+      if (err.response) {
+        if (err.response.status === 400) {
+          color = blue[0]
+          text = "Nothing to sync!"
+          fontColor = "black"
+        }
+      }
+
+      this.setState({
+        text: text,
+        style: {
+          margin: "0px 5px 0px 5px",
+          color: fontColor,
+          backgroundColor: color
+        }
+      })
+    })
+    .finally(() => {
+      this.setState({loading: false})
+    })
+  }
+
+  render() {
+    return (
+        <Button 
+          style={this.state.style}
+          onClick={this.syncRepositories}
+          loading={this.state.loading}
+          block
+        >
+          {this.state.text}
+        </Button>
+    )
+  }
+}
 
 class LoggedInLeftColumn extends React.Component {
   constructor(props) {
@@ -31,8 +103,7 @@ class LoggedInLeftColumn extends React.Component {
   getRepos() {
     axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
     .then((res) => {
-      // TODO: Remove this
-      // this.setState({repos: res.data})
+      this.setState({repos: res.data})
     })
     .catch((err) => {
       alert("Error grabbing repositories")
@@ -49,16 +120,6 @@ class LoggedInLeftColumn extends React.Component {
     )
   }
 
-  syncRepositories() {
-    axios.get(`${settings.syncUrl}/${getUserId()}`)
-    .then(res => {
-      console.log(res)
-    })
-    .catch(err => {
-      console.log(err.data)
-    })
-  }
-
   render() {
     return (
       <div style={{margin: "6px 24px 6px 24px"}}>
@@ -72,13 +133,7 @@ class LoggedInLeftColumn extends React.Component {
             <h3> No repositories found! </h3>
           </List.Item>
           <List.Item> 
-            <Button 
-              style={{margin: "0px 5px 0px 5px"}}
-              onClick={this.syncRepositories}
-              block
-            >
-              Click here to sync
-            </Button>
+            <SyncButton />
           </List.Item>
         </List>
         :
@@ -86,7 +141,11 @@ class LoggedInLeftColumn extends React.Component {
           header={this.getListHeader()}
           dataSource={this.state.repos}
           renderItem={this.renderRepo}
-        />
+        >
+          <List.Item> 
+            <SyncButton />
+          </List.Item>
+        </List>
       }
       </div>
     )
