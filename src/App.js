@@ -20,9 +20,8 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <div>
+      <div style={{height: "100%"}}>
         <Route exact path="/" component={homepage} />
-        <ProtectedRoute path="/job/:jobId" component={Job} />
       </div>
     </BrowserRouter>
   );

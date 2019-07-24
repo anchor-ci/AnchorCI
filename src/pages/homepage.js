@@ -4,6 +4,7 @@ import settings from '../settings.js';
 import { getUserId } from '../utils.js';
 import axios from 'axios';
 import { green, red, blue } from "@ant-design/colors"
+import JobList from "../components/job_list.js";
 import {
   Form,
   Input,
@@ -23,7 +24,7 @@ class SyncButton extends React.Component {
 
     this.state = {
       loading: false,
-      text: "Click here to sync",
+      text: "Sync Repositories",
       style: {
         margin: "0px 5px 0px 5px",
         color: "black",
@@ -156,7 +157,9 @@ class LoggedInMiddleColumn extends React.Component {
   render() {
     return (
       <div>
-        <h1> Welcome </h1>
+        <JobList
+          repository={getUserId()}
+        />
       </div>
     )
   }
@@ -165,18 +168,25 @@ class LoggedInMiddleColumn extends React.Component {
 export class LoggedInHomepage extends React.Component {
   constructor(props) {
     super(props)
+
+    this.sideColumnStyle = {
+      backgroundColor: blue[0],
+      height: "100%"
+    }
   }
 
   render() {
     return (
-      <Row>
-        <Col span={6}>
+      <Row style={{height: "100%"}}>
+        <Col span={5} style={this.sideColumnStyle}>
           <LoggedInLeftColumn />
         </Col>
-        <Col span={12}>
+        <Col span={14}>
           <LoggedInMiddleColumn />
         </Col>
-        <Col span={6}>col-8</Col>
+        <Col span={5} style={this.sideColumnStyle}>
+          Bye
+        </Col>
       </Row>
     )
   }
