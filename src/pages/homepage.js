@@ -89,30 +89,40 @@ class SyncButton extends React.Component {
   }
 }
 
+class RepositoryList extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return (
+      <div>
+      </div>
+    )
+  }
+}
+
 class LoggedInLeftColumn extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { repos: [] }
-  }
-
-  componentDidMount() {
-    // Grab repositories for left column
-    this.getRepos()
-  }
-
-  getRepos() {
-    axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
-    .then((res) => {
-      this.setState({repos: res.data})
-    })
-    .catch((err) => {
-      alert("Error grabbing repositories")
-    })
+    this.renderRepo = this.renderRepo.bind(this)
   }
 
   renderRepo(item) {
-    return <List.Item> {item.name} </List.Item>
+    const buttonStyle = {
+      height: "100%",
+      width: "100%",
+    }
+
+    return (
+      <List.Item> 
+        <Button 
+          style={buttonStyle}
+          onClick={() => {this.props.onClick(item)}}
+        >{item.name}</Button>
+      </List.Item>
+    )
   }
 
   getListHeader() {
@@ -125,7 +135,7 @@ class LoggedInLeftColumn extends React.Component {
     return (
       <div style={{margin: "6px 24px 6px 24px"}}>
       {
-        this.state.repos.length == 0 ?
+        this.props.repositories.length == 0 ?
         <List
           header={this.getListHeader()}
           style={{textAlign: "center"}}
@@ -140,10 +150,10 @@ class LoggedInLeftColumn extends React.Component {
         :
         <List
           header={this.getListHeader()}
-          dataSource={this.state.repos}
+          dataSource={this.props.repositories}
           renderItem={this.renderRepo}
         >
-          <List.Item> 
+          <List.Item>
             <SyncButton />
           </List.Item>
         </List>
@@ -154,11 +164,15 @@ class LoggedInLeftColumn extends React.Component {
 }
 
 class LoggedInMiddleColumn extends React.Component { 
+  constructor(props) {
+    super(props)
+  }
+
   render() {
     return (
       <div>
         <JobList
-          repository={getUserId()}
+          jobs={this.props.repository}
         />
       </div>
     )
@@ -173,16 +187,50 @@ export class LoggedInHomepage extends React.Component {
       backgroundColor: blue[0],
       height: "100%"
     }
+
+    this.state = {
+      repos: [],
+      jobs: []
+    }
+  }
+
+  componentDidMount() {
+    this.getRepos()
+  }
+
+  getRepos() {
+    axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
+    .then((res) => {
+      this.setState({repos: res.data})
+    })
+    .catch((err) => {
+      alert("Error grabbing repositories")
+    })
+  }
+
+  getJobsForRepo(repo) {
+    axios.get(`${settings.jobByRepoUrl}/${repo.id}`, {})
+    .then((res) => {
+      this.setState({jobs: res.data})
+    })
+    .catch((err) => {
+      // TODO: Add failure case here
+    })
   }
 
   render() {
     return (
       <Row style={{height: "100%"}}>
         <Col span={5} style={this.sideColumnStyle}>
-          <LoggedInLeftColumn />
+          <LoggedInLeftColumn 
+            repositories={this.state.repos}
+            onClick={(item) => { this.getJobsForRepo(item) }}
+          />
         </Col>
         <Col span={14}>
-          <LoggedInMiddleColumn />
+          <LoggedInMiddleColumn 
+            repository={this.state.jobs}
+          />
         </Col>
         <Col span={5} style={this.sideColumnStyle}>
           Bye
