@@ -30,6 +30,11 @@ class LoggedInBar extends React.Component {
     history.push(settings.LOGOUT_REDIRECT)
   }
 
+  goHome = () => {
+    const { history } = this.props;
+    history.push(settings.HOME_URL)
+  }
+
   render() {
     return (
       <Menu mode="horizontal">

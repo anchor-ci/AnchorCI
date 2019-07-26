@@ -17,6 +17,7 @@ settings.baseUrl = baseUrl[settings.env]
 settings.authUrl = authUrl[settings.env]
 settings.jobUrl = jobUrl[settings.env]
 
+settings.HOME_URL = "/"
 settings.LOGIN_REDIRECT = "/"
 settings.LOGOUT_REDIRECT = "/"
 settings.githubClientId = "8dbaad72c2fb3ec43f8d"
@@ -26,5 +27,6 @@ settings.loginUrl = `${settings.authUrl}/auth`
 settings.registerUrl = `${settings.authUrl}/user`
 settings.syncUrl = `${settings.authUrl}/sync`
 settings.jobByRepoUrl = `${settings.jobUrl}/job`
+settings.jobStatusUrl = `${settings.jobUrl}/status`
 
 export default settings
