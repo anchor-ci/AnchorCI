@@ -1,11 +1,12 @@
-FROM node:10.16-slim
+FROM node:10.16-slim as BUILDER
 
 WORKDIR /app
 COPY package.json package.json
-
-RUN npm install
-
 COPY public public
 COPY src src
 
-CMD [ "npm", "start" ]
+RUN npm install
+RUN npm run build
+RUN npm install -g serve
+
+CMD [ "serve", "-s", "/app/build", "-l", "tcp://0.0.0.0:3000" ]

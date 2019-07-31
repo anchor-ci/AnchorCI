@@ -2,7 +2,7 @@ let settings = {}
 settings.env = process.env.ENV || 'local'
 
 let authUrl = {
-  local: `http://172.18.0.5:9000`
+  local: `auth.default.svc.cluster.local`
 }
 
 let baseUrl = {
@@ -10,18 +10,19 @@ let baseUrl = {
 }
 
 let jobUrl = {
-  local: `http://172.18.0.6:8080`
+  local: `job.default.svc.cluster.local`
 }
 
 settings.baseUrl = baseUrl[settings.env]
 settings.authUrl = authUrl[settings.env]
 settings.jobUrl = jobUrl[settings.env]
 
+settings.githubRedirect = "http://192.168.39.42:31291/"
 settings.HOME_URL = "/"
 settings.LOGIN_REDIRECT = "/"
 settings.LOGOUT_REDIRECT = "/"
 settings.githubClientId = "8dbaad72c2fb3ec43f8d"
-settings.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${settings.githubClientId}`
+settings.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${settings.githubClientId}&redirect_uri=${settings.githubRedirect}`
 settings.userRepoUrl = `${settings.jobUrl}/repo/user`
 settings.loginUrl = `${settings.authUrl}/auth`
 settings.registerUrl = `${settings.authUrl}/user`
