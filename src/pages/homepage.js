@@ -89,19 +89,6 @@ class SyncButton extends React.Component {
   }
 }
 
-class RepositoryList extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
-    return (
-      <div>
-      </div>
-    )
-  }
-}
-
 class LoggedInLeftColumn extends React.Component {
   constructor(props) {
     super(props)
@@ -187,10 +174,14 @@ export class LoggedInHomepage extends React.Component {
       backgroundColor: blue[0],
       height: "100%"
     }
+  
+    // Every 10 seconds
+    this.updateJobTimer = 10000
 
     this.state = {
       repos: [],
-      jobs: []
+      jobs: [],
+      jobInterval: undefined
     }
   }
 
@@ -205,6 +196,18 @@ export class LoggedInHomepage extends React.Component {
     })
     .catch((err) => {
       alert("Error grabbing repositories")
+    })
+  }
+
+  setupMiddleColumn(repo) {
+    if (this.state.jobInterval) {
+      clearInterval(this.state.jobInterval)
+    }
+
+    this.getJobsForRepo(repo)
+
+    this.setState({
+      jobInterval: setInterval(() => {this.getJobsForRepo(repo)}, this.updateJobTimer)
     })
   }
 
@@ -224,7 +227,7 @@ export class LoggedInHomepage extends React.Component {
         <Col span={5} style={this.sideColumnStyle}>
           <LoggedInLeftColumn 
             repositories={this.state.repos}
-            onClick={(item) => { this.getJobsForRepo(item) }}
+            onClick={(item) => { this.setupMiddleColumn(item) }}
           />
         </Col>
         <Col span={14}>

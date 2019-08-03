@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from './components/navbar.js';
-import Job from './pages/job.js';
+import History from './pages/job.js';
 import Index from './pages/index.js';
 import ProtectedRoute from './components/protected_route.js';
 import { loggedIn } from './utils.js';
@@ -22,6 +22,7 @@ function App() {
       <Navbar />
       <div style={{height: "100%"}}>
         <Route exact path="/" component={homepage} />
+        <Route exact path="/history/:historyId" component={History} />
       </div>
     </BrowserRouter>
   );

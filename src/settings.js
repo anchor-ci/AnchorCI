@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 let settings = {}
 settings.env = process.env.ENV || 'local'
 
@@ -17,6 +19,18 @@ settings.baseUrl = baseUrl[settings.env]
 settings.authUrl = authUrl[settings.env]
 settings.jobUrl = jobUrl[settings.env]
 
+let axiosSettings = {
+  local: {
+    jobInstance: axios.create({
+      baseURL: settings.jobUrl
+    }),
+    authInstance: axios.create({
+      baseURL: settings.authUrl
+    }),
+  }
+}
+
+settings.axios = axiosSettings[settings.env]
 settings.HOME_URL = "/"
 settings.LOGIN_REDIRECT = "/"
 settings.LOGOUT_REDIRECT = "/"

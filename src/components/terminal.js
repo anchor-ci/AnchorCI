@@ -9,17 +9,44 @@ const style = {
 }
 
 export default class XTerminal extends React.Component {
-    componentDidMount() {
-        let term = new Terminal();
-        term.open(document.getElementById('terminal'));
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      term: undefined
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.text) {
+      state.term.clear()
+      state.term.write(props.text)
+
+      console.log(`Writing ${props.text}`)
+
+      return {
+        text: props.text,
+        term: state.term
+      }
     }
 
-    render() {
-        return (
-            <div style={style}>
-                <div id="terminal" style={style}>
-                </div>
-            </div>
-        )
-    }
+    // Return null to indicate no change to state.
+    return null;
+  }
+
+  componentDidMount() {
+    let term = new Terminal();
+    term.open(document.getElementById('terminal'));
+
+    this.setState({term: term})
+  }
+
+  render() {
+    return (
+      <div style={style}>
+        <div id="terminal" style={style}>
+        </div>
+      </div>
+    )
+  }
 }
