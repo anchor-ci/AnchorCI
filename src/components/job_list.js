@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import settings from "../settings.js";
 import { Table, Button } from "antd";
+import { getLatestHistory } from "../api_calls.js";
 
 export default class JobList extends React.Component {
   constructor(props) {
@@ -22,6 +23,10 @@ export default class JobList extends React.Component {
       }
     ]
 
+    this.state = {
+      latestHistoryId: undefined
+    }
+
     this.getJobs = this.getJobs.bind(this)
   }
 
@@ -37,11 +42,18 @@ export default class JobList extends React.Component {
   }
 
   renderGoButton(_, obj, index) {
-    let url = `/job/${obj.key}`
+    getLatestHistory(obj.key)
+      .then(res => {
+        this.setState({latestHistoryId: res.data.id})
+    })
+      .catch(err => {
+        alert("Error IS NOT HANDLED, report this on GitHub.")
+    })
     
     return (
-      <Button 
-        href={url}
+      <Button
+        href={`/history/${this.state.latestHistoryId}`}
+        disabled={!this.state.latestHistoryId}
         shape="round"
         size="large"
       >

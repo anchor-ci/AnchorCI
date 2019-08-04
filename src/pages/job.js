@@ -16,20 +16,29 @@ export default class History extends React.Component {
     settings.axios.jobInstance.get(`/histories/${this.props.match.params.historyId}`)
     .then((msg) => {
       this.setState({history: msg.data.history[0]})
-      console.log(this.state)
     })
     .catch((err) => {
       console.log(err.response)
     })
   }
 
+  getText() {
+    let text;
+
+    if (this.state.history.success) {
+      text = this.state.history.text
+    } else {
+      text = this.state.history.failureText
+    }
+
+    return text
+  }
+
   render() {
     return (
       <div>
         <XTerminal 
-          text={
-            this.state.history.success ? this.state.history.text : this.state.history.failureText
-          }
+          text={this.getText()}
         />
       </div>
     )

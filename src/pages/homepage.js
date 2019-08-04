@@ -5,6 +5,7 @@ import { getUserId } from '../utils.js';
 import axios from 'axios';
 import { green, red, blue } from "@ant-design/colors"
 import JobList from "../components/job_list.js";
+import { getLatestHistory } from "../api_calls.js";
 import {
   Form,
   Input,
