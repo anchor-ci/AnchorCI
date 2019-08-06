@@ -24,7 +24,7 @@ export default class JobList extends React.Component {
     ]
 
     this.state = {
-      latestHistoryId: undefined
+      historyIds: []
     }
 
     this.getJobs = this.getJobs.bind(this)
@@ -44,16 +44,18 @@ export default class JobList extends React.Component {
   renderGoButton(_, obj, index) {
     getLatestHistory(obj.key)
       .then(res => {
-        this.setState({latestHistoryId: res.data.id})
+        this.state.historyIds.push(res.data.id)
     })
       .catch(err => {
-        alert("Error IS NOT HANDLED, report this on GitHub.")
+        console.log(err)
     })
     
     return (
       <Button
-        href={`/history/${this.state.latestHistoryId}`}
-        disabled={!this.state.latestHistoryId}
+        disabled={!!this.state.historyIds[index]}
+        onClick={() => {
+          !!this.props.onView ? this.props.onView(this.state.historyIds[index]) : console.log("nope")
+        }}
         shape="round"
         size="large"
       >

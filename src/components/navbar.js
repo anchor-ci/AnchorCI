@@ -78,7 +78,6 @@ class LoggedOutBar extends React.Component {
       .catch((err) => {
         alert("An error ocurred signing in.")
         console.log(err.response)
-        console.log("Adding line")
       })
     }
   }

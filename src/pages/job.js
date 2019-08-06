@@ -2,43 +2,53 @@ import React from 'react';
 import axios from 'axios';
 import XTerminal from '../components/terminal.js';
 import settings from '../settings.js';
+import * as chalk from 'chalk';
+
+let options: any = {enabled: true, level: 2};
+const chalked = new chalk.constructor(options);
 
 export default class History extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      history: {}
+      histories: []
     }
   }
 
   componentWillMount() {
+    this.getHistory()
+    setInterval(() => { this.getHistory() }, 10000)
+  }
+
+  getHistory() {
     settings.axios.jobInstance.get(`/histories/${this.props.match.params.historyId}`)
     .then((msg) => {
-      this.setState({history: msg.data.history[0]})
+      // Only modify history state if we get new results
+      if (this.state.histories.length != msg.data.history.length) {
+        this.setState({
+          histories: msg.data.history
+        })
+      }
     })
     .catch((err) => {
       console.log(err.response)
     })
   }
 
-  getText() {
-    let text;
-
-    if (this.state.history.success) {
-      text = this.state.history.text
-    } else {
-      text = this.state.history.failureText
+  getText(history) {
+    if (history.succeeded) {
+      return history.text
     }
 
-    return text
+    return chalked.red(history.failureText)
   }
 
   render() {
     return (
       <div>
         <XTerminal 
-          text={this.getText()}
+          text={this.state.histories.map(this.getText)}
         />
       </div>
     )

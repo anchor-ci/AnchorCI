@@ -23,9 +23,19 @@ export default class XTerminal extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.text) {
+    if (props.text && state.term) {
       state.term.clear()
-      state.term.write(props.text)
+      state.term.reset()
+
+      if (Array.isArray(props.text)) {
+        props.text.forEach(line => {
+          state.term.writeln(line)
+        })
+      }
+
+      if (typeof props.text === "string") {
+        state.term.writeln(props.text)
+      }
 
       return {
         text: props.text,

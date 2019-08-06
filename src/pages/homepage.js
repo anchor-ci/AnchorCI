@@ -154,6 +154,13 @@ class LoggedInLeftColumn extends React.Component {
 class LoggedInMiddleColumn extends React.Component { 
   constructor(props) {
     super(props)
+
+    this.redirect = this.redirect.bind(this)
+  }
+
+  redirect(history) {
+    console.log(this.props.history)
+    this.props.history.push(`/history/${history}`)
   }
 
   render() {
@@ -161,6 +168,7 @@ class LoggedInMiddleColumn extends React.Component {
       <div>
         <JobList
           jobs={this.props.repository}
+          onView={this.redirect}
         />
       </div>
     )
@@ -233,6 +241,7 @@ export class LoggedInHomepage extends React.Component {
         </Col>
         <Col span={14}>
           <LoggedInMiddleColumn 
+            history={this.props.history}
             repository={this.state.jobs}
           />
         </Col>
