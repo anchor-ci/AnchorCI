@@ -3,89 +3,115 @@ import 'antd/dist/antd.css';
 import settings from '../settings.js';
 import { getUserId } from '../utils.js';
 import axios from 'axios';
-import { green, red, blue } from "@ant-design/colors"
+import { green, red, blue, grey } from "@ant-design/colors"
 import JobList from "../components/job_list.js";
-import { getLatestHistory } from "../api_calls.js";
+import RepoCard from "../components/repo_card.js";
+import { getLatestHistory, getJobsFromRepo } from "../api_calls.js";
+import styled from "styled-components";
+import { 
+  Button, 
+  DataTable,
+  Accordion,
+  AccordionPanel,
+  Grid,
+  Box
+} from 'grommet';
+
 import {
   Form,
   Input,
   Row,
   Col,
-  Checkbox,
-  Menu, 
   Icon, 
-  Modal, 
-  Button,
-  List,
 } from 'antd';
+
+const SyncButtonStyled = styled(Button)`
+  :hover {
+    box-shadow: 0px 2px 0px 2px #555555;
+    background-color: #F8F8F8;
+  }
+
+  border: 2px solid #FFFFFF;
+  background-color: #FFFFFF;
+`
 
 class SyncButton extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      loading: false,
-      text: "Sync Repositories",
-      style: {
-        margin: "0px 5px 0px 5px",
-        color: "black",
-      }
+      text: "Sync Repositories"
     }
 
     this.syncRepositories = this.syncRepositories.bind(this)
   }
 
   syncRepositories() {
-    this.setState({loading: true})
-
     axios.get(`${settings.syncUrl}/${getUserId()}`)
     .then(res => {
       this.setState({
-        text: "Done!",
-        style: {
-          margin: "0px 5px 0px 5px",
-          color: "white",
-          backgroundColor: green.primary
-        }
+        text: "Done!"
       })
     })
     .catch(err => {
-      let fontColor = "white"
-      let color = red.primary
-      let text = "Failed to sync repositories."
-
       if (err.response) {
         if (err.response.status === 400) {
-          color = blue[0]
-          text = "Nothing to sync!"
-          fontColor = "black"
         }
       }
-
-      this.setState({
-        text: text,
-        style: {
-          margin: "0px 5px 0px 5px",
-          color: fontColor,
-          backgroundColor: color
-        }
-      })
     })
     .finally(() => {
-      this.setState({loading: false})
     })
   }
 
   render() {
     return (
-        <Button 
-          style={this.state.style}
+        <SyncButtonStyled
+          label={this.state.text}
           onClick={this.syncRepositories}
-          loading={this.state.loading}
-          block
-        >
-          {this.state.text}
-        </Button>
+       />
+    )
+  }
+}
+
+class RepositoryList extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.renderRepo = this.renderRepo.bind(this)
+  }
+
+  renderRepo(item, index) {
+    return (
+      <Box
+        key={item.name}
+        gridArea={`repo_${index}`}
+        overflow="hidden"
+      >
+        <RepoCard
+          title="Sup"
+        />
+      </Box>
+    )
+  }
+
+  getArea(_, index) {
+    return {
+      name: `repo_${index}`, 
+      start: [0,index], 
+      end: [1,index]
+    }
+  }
+
+  render() {
+    return (
+      <Grid
+        alignContent="center"
+        rows={Array(this.props.repositories.length).fill("xxsmall")}
+        columns={["xxsmall"]}
+        areas={this.props.repositories.map(this.getArea)}
+      >
+        { this.props.repositories.map(this.renderRepo) }
+      </Grid>
     )
   }
 }
@@ -94,59 +120,31 @@ class LoggedInLeftColumn extends React.Component {
   constructor(props) {
     super(props)
 
-    this.renderRepo = this.renderRepo.bind(this)
-  }
-
-  renderRepo(item) {
-    const buttonStyle = {
-      height: "100%",
-      width: "100%",
+    this.state = {
+      repos: [{name: "Test Repo"}, {name: "Other Repo"}, {name: "Third Repo"}]
     }
-
-    return (
-      <List.Item> 
-        <Button 
-          style={buttonStyle}
-          onClick={() => {this.props.onClick(item)}}
-        >{item.name}</Button>
-      </List.Item>
-    )
   }
 
-  getListHeader() {
-    return (
-      <h2> Repositories </h2>
-    )
+  getRepos() {
+    axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
+    .then((res) => {
+      //this.setState({repos: res.data})
+    })
+    .catch((err) => {
+      alert("Error grabbing repositories")
+    })
+  }
+
+  componentDidMount() {
+    this.getRepos()
   }
 
   render() {
     return (
-      <div style={{margin: "6px 24px 6px 24px"}}>
-      {
-        this.props.repositories.length == 0 ?
-        <List
-          header={this.getListHeader()}
-          style={{textAlign: "center"}}
-        >
-          <List.Item> 
-            <h3> No repositories found! </h3>
-          </List.Item>
-          <List.Item> 
-            <SyncButton />
-          </List.Item>
-        </List>
-        :
-        <List
-          header={this.getListHeader()}
-          dataSource={this.props.repositories}
-          renderItem={this.renderRepo}
-        >
-          <List.Item>
-            <SyncButton />
-          </List.Item>
-        </List>
-      }
-      </div>
+      <RepositoryList
+        repositories={this.state.repos}
+        onRepoClick={item => { this.props.onRepoClick(item) }}
+      />
     )
   }
 }
@@ -159,7 +157,6 @@ class LoggedInMiddleColumn extends React.Component {
   }
 
   redirect(history) {
-    console.log(this.props.history)
     this.props.history.push(`/history/${history}`)
   }
 
@@ -180,32 +177,19 @@ export class LoggedInHomepage extends React.Component {
     super(props)
 
     this.sideColumnStyle = {
-      backgroundColor: blue[0],
+      backgroundColor: "#f5f5f5",
       height: "100%"
     }
   
     // Every 10 seconds
     this.updateJobTimer = 10000
-
     this.state = {
       repos: [],
       jobs: [],
       jobInterval: undefined
     }
-  }
 
-  componentDidMount() {
-    this.getRepos()
-  }
-
-  getRepos() {
-    axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
-    .then((res) => {
-      this.setState({repos: res.data})
-    })
-    .catch((err) => {
-      alert("Error grabbing repositories")
-    })
+    this.setupMiddleColumn = this.setupMiddleColumn.bind(this);
   }
 
   setupMiddleColumn(repo) {
@@ -213,20 +197,22 @@ export class LoggedInHomepage extends React.Component {
       clearInterval(this.state.jobInterval)
     }
 
-    this.getJobsForRepo(repo)
+    this.getJobsForRepo(repo.id)
 
     this.setState({
-      jobInterval: setInterval(() => {this.getJobsForRepo(repo)}, this.updateJobTimer)
+      jobInterval: setInterval(() => {
+        this.getJobsForRepo(repo.id)
+      }, this.updateJobTimer)
     })
   }
 
   getJobsForRepo(repo) {
-    axios.get(`${settings.jobByRepoUrl}/${repo.id}`, {})
-    .then((res) => {
-      this.setState({jobs: res.data})
+    getJobsFromRepo(repo)
+      .then((res) => {
+        this.setState({jobs: res.data})
     })
-    .catch((err) => {
-      // TODO: Add failure case here
+      .catch((err) => {
+        // TODO: Add failure case here
     })
   }
 
@@ -235,13 +221,13 @@ export class LoggedInHomepage extends React.Component {
       <Row style={{height: "100%"}}>
         <Col span={5} style={this.sideColumnStyle}>
           <LoggedInLeftColumn 
-            repositories={this.state.repos}
-            onClick={(item) => { this.setupMiddleColumn(item) }}
+            {...this.props} 
+            onRepoClick={this.setupMiddleColumn}
           />
         </Col>
         <Col span={14}>
           <LoggedInMiddleColumn 
-            history={this.props.history}
+            {...this.props}
             repository={this.state.jobs}
           />
         </Col>

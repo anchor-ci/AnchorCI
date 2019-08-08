@@ -1,8 +1,21 @@
 import React from "react";
 import axios from "axios";
 import settings from "../settings.js";
-import { Table, Button } from "antd";
+import { Button, DataTable, Accordion, AccordionPanel } from 'grommet';
+import { CaretNext } from 'grommet-icons';
+import { Table } from "antd";
 import { getLatestHistory } from "../api_calls.js";
+
+function ViewButton(props) {
+  return (
+      <Button 
+        {...props}
+        icon={<CaretNext />}
+        label="View"
+        active
+      />
+  )
+}
 
 export default class JobList extends React.Component {
   constructor(props) {
@@ -10,15 +23,13 @@ export default class JobList extends React.Component {
 
     this.columns = [
       {
-        title: "ID",
-        dataIndex: "id"
+        property: "id",
+        header: <h2> ID </h2>,
+        primary: true
       },
       {
-        title: "State",
-        dataIndex: "state"
-      },
-      {
-        dataIndex: "url",
+        property: "url",
+        header: <h2> View </h2>,
         render: this.renderGoButton.bind(this)
       }
     ]
@@ -41,37 +52,50 @@ export default class JobList extends React.Component {
     return repos
   }
 
-  renderGoButton(_, obj, index) {
-    getLatestHistory(obj.key)
+  renderEntry(data) {
+    console.log(data)
+
+    return (
+      <Accordion>
+        <AccordionPanel label="Panel 1">
+          Hello
+        </AccordionPanel>
+        <AccordionPanel label="Panel 2">
+          Hello
+        </AccordionPanel>
+      </Accordion>
+    )
+  }
+
+  renderGoButton(data) {
+    getLatestHistory(data)
       .then(res => {
-        this.state.historyIds.push(res.data.id)
+        this.state.historyIds[data.id] = res.data.id
     })
       .catch(err => {
         console.log(err)
     })
     
     return (
-      <Button
-        disabled={!!this.state.historyIds[index]}
+      <ViewButton
+        disabled={!this.state.historyIds[data.id]}
+        href={`/history/${this.state.historyIds[data.id]}`}
         onClick={() => {
-          !!this.props.onView ? this.props.onView(this.state.historyIds[index]) : console.log("nope")
+          !!this.props.onView ? 
+          this.props.onView(this.state.historyIds[data.id]) :
+          console.log("nope")
         }}
-        shape="round"
-        size="large"
-      >
-        View
-      </Button>
+      />
     )
   }
 
   render() {
     return (
-      <div>
-        <Table
-          columns={this.columns}
-          dataSource={this.getJobs()}
-        />
-      </div>
+      <DataTable
+        style={{width: "100%"}}
+        columns={this.columns}
+        data={this.getJobs()}
+      />
     )
   }
 }

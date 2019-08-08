@@ -19,8 +19,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar />
       <div style={{height: "100%"}}>
+        <Navbar />
         <Route exact path="/" component={homepage} />
         <Route exact path="/history/:historyId" component={History} />
       </div>

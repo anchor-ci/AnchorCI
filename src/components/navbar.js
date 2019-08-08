@@ -1,23 +1,67 @@
 import React from 'react';
 import { parse } from 'query-string';
+import styled from 'styled-components';
 import axios from 'axios';
 import settings from '../settings.js';
 import 'antd/dist/antd.css';
+import { green, red, blue, grey } from "@ant-design/colors"
 import { loggedIn, logout } from '../utils.js';
 import { storeLogin } from '../utils.js';
 import { withRouter, Redirect } from 'react-router';
+import { 
+  Heading, 
+  Grid, 
+  Box,
+  Button,
+  Tab,
+  Tabs
+} from 'grommet';
+
 import {
-  Alert,
   Form,
-  Input,
-  Row,
-  Col,
-  Checkbox,
   Menu, 
   Icon, 
   Modal, 
-  Button 
-} from 'antd'
+} from 'antd';
+
+let headerColor = "#00739D"
+
+const NavbarButton = styled(Button)`
+  :hover {
+    box-shadow: 0px 2px 0px 2px #555555;
+    background-color: #F8F8F8;
+  }
+
+  border: 2px solid #FFFFFF;
+  background-color: #FFFFFF;
+`
+
+function BaseNavbar(props) {
+  return (
+    <Grid
+      style={{backgroundColor: headerColor}} 
+      alignContent="center"
+      rows={["xxsmall"]}
+      columns={["full"]}
+      areas={[
+        { name: 'header', start: [0,0], end: [1,0] }
+      ]}
+    >
+      <Box 
+        fill="horizontal"
+        gridArea='header' 
+        border="bottom"
+        direction="row"
+        basis="small"
+        alignContent="center"
+        gap="small"
+      >
+        <Heading style={{color: "white", float:"left"}}> anchor </Heading>
+        {props.children}
+      </Box>
+    </Grid>
+  )
+}
 
 class LoggedInBar extends React.Component {
   constructor(props) {
@@ -37,19 +81,24 @@ class LoggedInBar extends React.Component {
 
   render() {
     return (
-      <Menu mode="horizontal">
-        <Menu.Item
+      <Box
+        style={{width: "100%"}}
+        justify="center"
+        direction="row"
+      >
+        <NavbarButton
+          margin="xsmall"
+          gridArea="header"
+          label="Home"
           onClick={this.goHome}
-        >
-          Home
-        </Menu.Item>
-        <Menu.Item 
-          style={{"float": "right"}}
+        />
+        <NavbarButton
+          margin="xsmall"
+          gridArea="header"
+          label="Logout"
           onClick={this.handleLogout}
-        >
-           Logout
-        </Menu.Item>
-      </Menu>
+        />
+      </Box>
     )
   }
 }
@@ -63,15 +112,14 @@ class LoggedOutBar extends React.Component {
     const queryParams = parse(this.props.location.search);
     const code = queryParams.code;
 
-    if (code) {
+    if (code && !loggedIn()) {
       axios.get(`${settings.authUrl}/auth/github?code=${code}`)
       .then((res) => {
         // If we got a successful login
         if (res.status === 200 || res.status === 201) {
           if (res.data) {
-            const { history } = this.props
             storeLogin(res.data)
-            history.push(settings.LOGIN_REDIRECT)
+            this.props.history.push(settings.LOGIN_REDIRECT)
           }
         }
       })
@@ -86,67 +134,26 @@ class LoggedOutBar extends React.Component {
     window.location.href = settings.githubAuthUrl
   }
 
-  goHome = () => {
-    const { history } = this.props;
-    history.push();
-  }
-
   render() {
     return (
-      <Menu mode="horizontal">
-        <Menu.Item
-          onClick={this.goHome}
-        >
-          Home
-        </Menu.Item>
-        <Menu.Item 
-          style={{
-            "float": "right",
-            "paddingLeft": "10px",
-            "paddingRight": "10px",
-            "fontSize": "16px",
-          }}
+      <div
+        gridArea="header"
+      >
+        <NavbarButton
+          label="Login"
           onClick={this.redirectLogin}
-        >
-           <Icon type="github" />
-        </Menu.Item>
-        <Menu.Item
-          style={{"float": "right"}}
-        >
-          Continue with:
-        </Menu.Item>
-      </Menu>
+        />
+      </div>
     )
   }
 }
-export default class Navbar extends React.Component {
-    constructor(props) {
-      super(props)
-    }
 
-    getMenu = () => {
-      let menu = <LoggedOutBar 
-        history={this.props.history} 
-        location={this.props.location}
-      />
-
-      if (loggedIn()) {
-        menu = <LoggedInBar 
-          history={this.props.history} 
-          location={this.props.location}
-        />
-      }
-
-      return menu;
-    }
-
-    render() {
-        return (
-          <div>
-            {this.getMenu()}
-          </div>
-        )
-    }
+export default function Navbar(props) {
+  return (
+    <BaseNavbar>
+      { loggedIn() ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
+    </BaseNavbar>
+  )
 }
 
 Navbar = withRouter(Navbar);
