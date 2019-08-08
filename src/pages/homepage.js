@@ -83,6 +83,7 @@ class RepositoryList extends React.Component {
   renderRepo(item, index) {
     return (
       <Box
+        margin="xxsmall"
         key={item.name}
         gridArea={`repo_${index}`}
         overflow="hidden"
@@ -106,7 +107,7 @@ class RepositoryList extends React.Component {
     return (
       <Grid
         alignContent="center"
-        rows={Array(this.props.repositories.length).fill("xxsmall")}
+        rows={Array(this.props.repositories.length).fill("xsmall")}
         columns={["xxsmall"]}
         areas={this.props.repositories.map(this.getArea)}
       >

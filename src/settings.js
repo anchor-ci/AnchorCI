@@ -42,5 +42,6 @@ settings.registerUrl = `${settings.authUrl}/user`
 settings.syncUrl = `${settings.authUrl}/sync`
 settings.jobByRepoUrl = `${settings.jobUrl}/job`
 settings.jobStatusUrl = `${settings.jobUrl}/status`
+settings.jobImageEndpoint = `${settings.jobUrl}/images/repo`
 
 export default settings
