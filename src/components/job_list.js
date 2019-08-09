@@ -52,28 +52,22 @@ export default class JobList extends React.Component {
     return repos
   }
 
-  renderEntry(data) {
-    console.log(data)
-
-    return (
-      <Accordion>
-        <AccordionPanel label="Panel 1">
-          Hello
-        </AccordionPanel>
-        <AccordionPanel label="Panel 2">
-          Hello
-        </AccordionPanel>
-      </Accordion>
-    )
-  }
-
   renderGoButton(data) {
-    getLatestHistory(data)
+    getLatestHistory(data.id)
       .then(res => {
-        this.state.historyIds[data.id] = res.data.id
+        let value = res.data.id
+        let key = data.id
+
+        if (!(key in this.state.historyIds)) {
+          this.setState({
+            historyIds: {...this.state.historyIds, [key]: value}
+          })
+
+          console.log(this.state)
+        }
     })
       .catch(err => {
-        console.log(err)
+        console.log(err.response)
     })
     
     return (

@@ -14,7 +14,9 @@ import {
   Accordion,
   AccordionPanel,
   Grid,
-  Box
+  Box,
+  Heading,
+  Text
 } from 'grommet';
 
 import {
@@ -27,12 +29,12 @@ import {
 
 const SyncButtonStyled = styled(Button)`
   :hover {
-    box-shadow: 0px 2px 0px 2px #555555;
-    background-color: #F8F8F8;
+    box-shadow: 0px 0px 0px 0px #555555;
+    background-color: white;
   }
 
-  border: 2px solid #FFFFFF;
-  background-color: #FFFFFF;
+  display: inline;
+  border: 2px solid #555555;
 `
 
 class SyncButton extends React.Component {
@@ -40,7 +42,7 @@ class SyncButton extends React.Component {
     super(props)
 
     this.state = {
-      text: "Sync Repositories"
+      text: "Sync"
     }
 
     this.syncRepositories = this.syncRepositories.bind(this)
@@ -50,25 +52,32 @@ class SyncButton extends React.Component {
     axios.get(`${settings.syncUrl}/${getUserId()}`)
     .then(res => {
       this.setState({
-        text: "Done!"
+        text: "Synced"
       })
     })
     .catch(err => {
-      if (err.response) {
+      if (err.response) { 
         if (err.response.status === 400) {
+          if (err.response.data.filter(item => item !== undefined).length > 0) {
+            this.setState({
+              text: "Synced"
+            })
+          } else {
+            this.setState({
+              text: "Failed"
+            })
+          }
         }
       }
-    })
-    .finally(() => {
     })
   }
 
   render() {
     return (
-        <SyncButtonStyled
-          label={this.state.text}
-          onClick={this.syncRepositories}
-       />
+      <SyncButtonStyled
+        label={this.state.text}
+        onClick={this.syncRepositories}
+      />
     )
   }
 }
@@ -83,13 +92,13 @@ class RepositoryList extends React.Component {
   renderRepo(item, index) {
     return (
       <Box
-        margin="xxsmall"
+        margin="xsmall"
         key={item.name}
         gridArea={`repo_${index}`}
-        overflow="hidden"
       >
         <RepoCard
-          title="Sup"
+          repo={item}
+          onClick={this.props.onRepoClick}
         />
       </Box>
     )
@@ -106,12 +115,15 @@ class RepositoryList extends React.Component {
   render() {
     return (
       <Grid
+        fill="horizontal"
         alignContent="center"
         rows={Array(this.props.repositories.length).fill("xsmall")}
         columns={["xxsmall"]}
         areas={this.props.repositories.map(this.getArea)}
       >
-        { this.props.repositories.map(this.renderRepo) }
+        { 
+          this.props.repositories.map(this.renderRepo) 
+        }
       </Grid>
     )
   }
@@ -122,14 +134,14 @@ class LoggedInLeftColumn extends React.Component {
     super(props)
 
     this.state = {
-      repos: [{name: "Test Repo"}, {name: "Other Repo"}, {name: "Third Repo"}]
+      repos: []
     }
   }
 
   getRepos() {
     axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
     .then((res) => {
-      //this.setState({repos: res.data})
+      this.setState({repos: res.data})
     })
     .catch((err) => {
       alert("Error grabbing repositories")
@@ -142,10 +154,30 @@ class LoggedInLeftColumn extends React.Component {
 
   render() {
     return (
-      <RepositoryList
-        repositories={this.state.repos}
-        onRepoClick={item => { this.props.onRepoClick(item) }}
-      />
+      <div style={{marginTop: "24px"}}>
+        <div style={{marginLeft: "8px", marginRight: "8px"}}>
+          <Box
+            textAlign="center"
+            alignContent="end"
+            direction="row-responsive"
+            justify="evenly"
+          >
+            <Heading 
+              style={{display: "inline"}}
+              level="2"
+              margin="none"
+            >
+              Repositories
+            </Heading>
+            <SyncButton/>
+          </Box>
+          <hr />
+        </div>
+        <RepositoryList
+          repositories={this.state.repos}
+          onRepoClick={item => { this.props.onRepoClick(item) }}
+        />
+      </div>
     )
   }
 }
@@ -199,18 +231,17 @@ export class LoggedInHomepage extends React.Component {
     }
 
     this.getJobsForRepo(repo.id)
-
-    this.setState({
-      jobInterval: setInterval(() => {
-        this.getJobsForRepo(repo.id)
-      }, this.updateJobTimer)
-    })
   }
 
   getJobsForRepo(repo) {
     getJobsFromRepo(repo)
       .then((res) => {
-        this.setState({jobs: res.data})
+        this.setState({
+          jobs: res.data,
+          jobInterval: setInterval(() => {
+            this.getJobsForRepo(repo)
+          }, this.updateJobTimer)
+        })
     })
       .catch((err) => {
         // TODO: Add failure case here
@@ -233,7 +264,6 @@ export class LoggedInHomepage extends React.Component {
           />
         </Col>
         <Col span={5} style={this.sideColumnStyle}>
-          Bye
         </Col>
       </Row>
     )
