@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import settings from '../settings.js';
+import { Github } from 'grommet-icons';
 import { 
   Text,
   Grid,
@@ -36,7 +37,6 @@ const CardText = styled(Text)`
   font-size: 24px;
   color: #333333;
 
-  margin-left: 8px;
 `
 
 export default class RepoCard extends React.Component {
@@ -55,7 +55,7 @@ export default class RepoCard extends React.Component {
   }
 
   getUrl() {
-    return encodeURI(`${settings.jobImageEndpoint}?filter=true&repo=${this.props.title}`)
+    return encodeURI(`${settings.jobImageEndpoint}?filter=true&repo=${this.props.repo.name}`)
   }
 
   getAreas() {
@@ -84,7 +84,12 @@ export default class RepoCard extends React.Component {
         >
           <Box
             gridArea='bottom'
+            direction="row"
+            gap="xsmall"
+            overflow="hidden"
+            pad={{left: "xxsmall"}}
           >
+            <Github />
             <CardText
               weight="bold"
             > 

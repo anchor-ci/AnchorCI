@@ -6,6 +6,7 @@ import axios from 'axios';
 import { green, red, blue, grey } from "@ant-design/colors"
 import JobList from "../components/job_list.js";
 import RepoCard from "../components/repo_card.js";
+import JobAccordion from "../components/job_accordion.js";
 import { getLatestHistory, getJobsFromRepo } from "../api_calls.js";
 import styled from "styled-components";
 import { 
@@ -195,12 +196,9 @@ class LoggedInMiddleColumn extends React.Component {
 
   render() {
     return (
-      <div>
-        <JobList
-          jobs={this.props.repository}
-          onView={this.redirect}
-        />
-      </div>
+      <JobAccordion
+        jobs={this.props.repository}
+      />
     )
   }
 }
@@ -211,9 +209,16 @@ export class LoggedInHomepage extends React.Component {
 
     this.sideColumnStyle = {
       backgroundColor: "#f5f5f5",
-      height: "100%"
+      height: "100%",
+      zIndex: "50"
     }
-  
+
+    this.middleColumnStyle = {
+      backgroundColor: "#DADADA", // DO THE ROAR
+      height: "100%",
+      zIndex: "49"
+    }
+
     // Every 10 seconds
     this.updateJobTimer = 10000
     this.state = {
@@ -257,7 +262,7 @@ export class LoggedInHomepage extends React.Component {
             onRepoClick={this.setupMiddleColumn}
           />
         </Col>
-        <Col span={14}>
+        <Col span={14} style={this.middleColumnStyle}>
           <LoggedInMiddleColumn 
             {...this.props}
             repository={this.state.jobs}

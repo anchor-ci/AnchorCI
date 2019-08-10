@@ -53,7 +53,6 @@ function BaseNavbar(props) {
         border="bottom"
         direction="row"
         basis="small"
-        alignContent="center"
         gap="small"
       >
         <Heading style={{color: "white", float:"left"}}> anchor </Heading>
@@ -81,23 +80,29 @@ class LoggedInBar extends React.Component {
 
   render() {
     return (
-      <Box
-        style={{width: "100%"}}
-        justify="center"
-        direction="row"
-      >
-        <NavbarButton
-          margin="xsmall"
-          gridArea="header"
-          label="Home"
-          onClick={this.goHome}
-        />
-        <NavbarButton
-          margin="xsmall"
-          gridArea="header"
-          label="Logout"
-          onClick={this.handleLogout}
-        />
+      <Box direction="row" fill="horizontal">
+        <Box
+          direction="row"
+          justify="start"
+        >
+          <NavbarButton
+            margin="xsmall"
+            gridArea="header"
+            label="Home"
+            onClick={this.goHome}
+          />
+        </Box>
+        <Box
+          direction="row"
+          justify="between"
+        >
+          <NavbarButton
+            margin="xsmall"
+            gridArea="header"
+            label="Logout"
+            onClick={this.handleLogout}
+          />
+        </Box>
       </Box>
     )
   }
