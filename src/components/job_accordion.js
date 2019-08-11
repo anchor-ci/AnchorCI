@@ -1,7 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import XTerminal from './terminal.js';
-import { CaretUp, CaretDown } from 'grommet-icons';
+import { 
+  CaretUp, 
+  CaretDown, 
+  StatusGood, 
+  StatusCritical,
+  StatusUnknown
+} from 'grommet-icons';
+
 import { 
   Accordion,
   AccordionPanel,
@@ -9,6 +16,11 @@ import {
   Collapsible,
   Text
 } from 'grommet';
+
+const STATUS_ICON_MAP = {
+  "SUCCESS": <StatusGood color="status-ok" />,
+  "FAILED": <StatusCritical color="status-critical" />
+}
 
 export default class JobAccordion extends React.Component {
   constructor(props) {
@@ -58,10 +70,12 @@ export default class JobAccordion extends React.Component {
             return (
               <Box
                 key={job.id}
+                onClick={() => {this.props.onClick(job)}}
               >
                 <HistoryPanel
                   key={job.id}
                   job={job}
+                  text={this.props.history.history}
                 />
               </Box>
             )
@@ -87,13 +101,16 @@ function HistoryHeader(props) {
       direction="row-responsive"
     >
       <Box
-        justify="start"
+        justify="center"
       >
         {props.title}
       </Box>
       <Box
         style={{marginLeft: "auto"}}
       >
+        {
+          STATUS_ICON_MAP[props.job.state] ? STATUS_ICON_MAP[props.job.state] : <StatusUnknown color="status-warning" />
+        }
         {
           !props.open ? <CaretDown /> : <CaretUp />
         }
@@ -120,6 +137,7 @@ class HistoryPanel extends React.Component {
           pad="medium"
           margin={{horizontal: "small"}}
           title={<Text>History ({this.props.job.id}) for {this.props.job.repository.name}.</Text>}
+          job={this.props.job}
           open={this.state.open}
           border={{
             color: "dark-2",
@@ -138,8 +156,9 @@ class HistoryPanel extends React.Component {
           <Box
             height="small"
           >
-            <XTerminal 
+            <XTerminal
               text={this.props.text}
+              id={this.props.job.id}
             />
           </Box>
         </Collapsible>

@@ -193,6 +193,10 @@ class LoggedInMiddleColumn extends React.Component {
     super(props)
 
     this.redirect = this.redirect.bind(this)
+
+    this.state = {
+      history: []
+    }
   }
 
   redirect(history) {
@@ -203,6 +207,18 @@ class LoggedInMiddleColumn extends React.Component {
     return (
       <JobAccordion
         jobs={this.props.repository}
+        history={this.state.history}
+        onClick={(item) => {
+          getLatestHistory(item.id)
+            .then(res => {
+              this.setState({
+                history: res.data
+              })
+          })
+            .catch(err => {
+              console.log("HISTORY ERROR")
+          })
+        }}
       />
     )
   }

@@ -44,7 +44,7 @@ export default class XTerminal extends React.Component {
 
   componentDidMount() {
     let term = new Terminal();
-    term.open(document.getElementById('terminal'));
+    term.open(document.getElementById(this.props.id));
 
     term.fit()
 
@@ -53,7 +53,7 @@ export default class XTerminal extends React.Component {
 
   render() {
     return (
-      <div id="terminal">
+      <div id={this.props.id}>
       </div>
     )
   }
