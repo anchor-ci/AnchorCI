@@ -8,11 +8,6 @@ import * as fit from 'xterm/lib/addons/fit/fit';
 Terminal.applyAddon(fullscreen)
 Terminal.applyAddon(fit)
 
-const style = {
-    height: '100%',
-    width: '100%'
-}
-
 export default class XTerminal extends React.Component {
   constructor(props) {
     super(props)
@@ -51,7 +46,6 @@ export default class XTerminal extends React.Component {
     let term = new Terminal();
     term.open(document.getElementById('terminal'));
 
-    term.toggleFullScreen(true)
     term.fit()
 
     this.setState({term: term})
@@ -59,9 +53,7 @@ export default class XTerminal extends React.Component {
 
   render() {
     return (
-      <div style={style}>
-        <div id="terminal">
-        </div>
+      <div id="terminal">
       </div>
     )
   }

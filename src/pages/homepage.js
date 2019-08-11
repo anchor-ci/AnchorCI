@@ -143,6 +143,11 @@ class LoggedInLeftColumn extends React.Component {
     axios.get(`${settings.userRepoUrl}/${getUserId()}`, {})
     .then((res) => {
       this.setState({repos: res.data})
+
+      // Set up the first repo as selected first
+      if (this.state.repos.length > 0 && this.props.onRepoClick) {
+        this.props.onRepoClick(this.state.repos[0])
+      }
     })
     .catch((err) => {
       alert("Error grabbing repositories")

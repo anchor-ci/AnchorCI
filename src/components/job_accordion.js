@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import XTerminal from './terminal.js';
+import { CaretUp, CaretDown } from 'grommet-icons';
 import { 
   Accordion,
   AccordionPanel,
   Box,
-  Collapsible
+  Collapsible,
+  Text
 } from 'grommet';
 
 export default class JobAccordion extends React.Component {
@@ -14,12 +16,9 @@ export default class JobAccordion extends React.Component {
 
     this.state = {
       selected: [],
-      current: 0,
-      last: 0
+      current: -1,
+      last: -1
     }
-  }
-
-  componentDidMount() {
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -36,8 +35,6 @@ export default class JobAccordion extends React.Component {
 
   setAccordion(index, state) {
     let cache = this.state.selected
-
-    console.log(`Settings ${index} to ${state}`)
 
     this.setState({
       selected: [...cache.slice(0, index), state, ...cache.slice(index+1, cache.length)],
@@ -62,16 +59,9 @@ export default class JobAccordion extends React.Component {
               <Box
                 key={job.id}
               >
-                <HistoryHeader 
-                  onClick={() => { 
-                    this.setAccordion(this.state.last, false)
-                    this.setAccordion(index, true)
-                  }}
-                />
                 <HistoryPanel
                   key={job.id}
                   job={job}
-                  open={this.state.selected[index]}
                 />
               </Box>
             )
@@ -83,6 +73,10 @@ export default class JobAccordion extends React.Component {
 }
 
 const HistoryHeaderStyle = styled(Box)`
+  :hover {
+    cursor: pointer;
+  }
+
   color: white;
 `
 
@@ -90,22 +84,66 @@ function HistoryHeader(props) {
   return (
     <HistoryHeaderStyle
       {...props}
+      direction="row-responsive"
     >
-      Hello
+      <Box
+        justify="start"
+      >
+        {props.title}
+      </Box>
+      <Box
+        style={{marginLeft: "auto"}}
+      >
+        {
+          !props.open ? <CaretDown /> : <CaretUp />
+        }
+      </Box>
     </HistoryHeaderStyle>
   )
 }
 
-function HistoryPanel(props) {
-  return (
-    <Collapsible open={props.open}>
-      <Box 
-        grow="horizontal"
-        background="light-2"
-        margin={{horizontal: "small"}}
-      >
-        TESTING!!!
+class HistoryPanel extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      open: false
+    }
+  }
+
+  render() {
+    return (
+      <Box>
+        <HistoryHeader
+          background="dark-1"
+          round="small"
+          pad="medium"
+          margin={{horizontal: "small"}}
+          title={<Text>History ({this.props.job.id}) for {this.props.job.repository.name}.</Text>}
+          open={this.state.open}
+          border={{
+            color: "dark-2",
+            style: "dashed",
+            side: "bottom"
+          }}
+          onClick={() => {
+            this.setState({
+              open: !this.state.open
+            })
+          }}
+        />
+        <Collapsible 
+          open={this.state.open}
+        >
+          <Box
+            height="small"
+          >
+            <XTerminal 
+              text={this.props.text}
+            />
+          </Box>
+        </Collapsible>
       </Box>
-    </Collapsible>
-  )
+    )
+  }
 }
