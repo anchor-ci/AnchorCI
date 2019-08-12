@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
-import XTerminal from './terminal.js';
+import styled, { keyframes } from 'styled-components';
+import { HistoryView } from './terminal.js';
 import { 
   CaretUp, 
   CaretDown, 
@@ -16,6 +16,22 @@ import {
   Collapsible,
   Text
 } from 'grommet';
+
+const Pulse = keyframes`
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(0, .6em);
+  }
+`
+
+const CaretUpPulse = styled(CaretUp)`
+`
+
+const CaretDownPulse = styled(CaretDown)`
+`
 
 const STATUS_ICON_MAP = {
   "SUCCESS": <StatusGood color="status-ok" />,
@@ -64,7 +80,7 @@ export default class JobAccordion extends React.Component {
 
   render() {
     return (
-      <Accordion>
+      <Box>
         {
           this.props.jobs.map((job, index) => {
             return (
@@ -81,7 +97,7 @@ export default class JobAccordion extends React.Component {
             )
           })
         }
-      </Accordion>
+      </Box>
     )
   } 
 }
@@ -112,7 +128,7 @@ function HistoryHeader(props) {
           STATUS_ICON_MAP[props.job.state] ? STATUS_ICON_MAP[props.job.state] : <StatusUnknown color="status-warning" />
         }
         {
-          !props.open ? <CaretDown /> : <CaretUp />
+          !props.open ? <CaretDownPulse /> : <CaretUpPulse />
         }
       </Box>
     </HistoryHeaderStyle>
@@ -153,11 +169,9 @@ class HistoryPanel extends React.Component {
         <Collapsible 
           open={this.state.open}
         >
-          <Box
-            height="small"
-          >
-            <XTerminal
-              text={this.props.text}
+          <Box>
+            <HistoryView
+              histories={this.props.text}
               id={this.props.job.id}
             />
           </Box>

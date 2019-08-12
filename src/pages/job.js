@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import XTerminal from '../components/terminal.js';
 import settings from '../settings.js';
 import * as chalk from 'chalk';
 
@@ -47,9 +46,6 @@ export default class History extends React.Component {
   render() {
     return (
       <div>
-        <XTerminal 
-          text={this.state.histories.map(this.getText)}
-        />
       </div>
     )
   }

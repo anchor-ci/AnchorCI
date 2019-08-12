@@ -1,60 +1,62 @@
 import React from 'react';
-import  { Terminal } from 'xterm';
-import Button from 'antd/lib/button';
-import "../../node_modules/xterm/dist/xterm.css";
-import * as fullscreen from 'xterm/lib/addons/fullscreen/fullscreen';
-import * as fit from 'xterm/lib/addons/fit/fit';
+import { Box } from 'grommet';
+import styled from 'styled-components';
 
-Terminal.applyAddon(fullscreen)
-Terminal.applyAddon(fit)
+const FailureLine = styled.span`
+  color: red;
+`
 
-export default class XTerminal extends React.Component {
+const SuccessLine = styled.span`
+  color: green;
+`
+
+const NormalLine = styled.span`
+`
+
+export class HistoryView extends React.Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      term: undefined
-    }
   }
 
-  static getDerivedStateFromProps(props, state) {
-    if (props.text && state.term) {
-      state.term.clear()
-      state.term.reset()
-
-      if (Array.isArray(props.text)) {
-        props.text.forEach(line => {
-          state.term.writeln(line)
-        })
-      }
-
-      if (typeof props.text === "string") {
-        state.term.writeln(props.text)
-      }
-
-      return {
-        text: props.text,
-        term: state.term
-      }
+  getText(line) {
+    if (line.failed) {
+      return <FailureLine> {line.failureText.replace('\n', '')} </FailureLine>
     }
 
-    // Return null to indicate no change to state.
-    return null;
+    return <NormalLine> {line.text.replace('\n', '')} </NormalLine>
   }
 
-  componentDidMount() {
-    let term = new Terminal();
-    term.open(document.getElementById(this.props.id));
-
-    term.fit()
-
-    this.setState({term: term})
+  getTextLine() {
+    return this.props.histories.map((history, index) => {
+      let isLast = this.props.histories.length == index
+      return (
+        <code
+          key={index}
+        >
+          {
+            this.getText(history)
+          }
+          {
+            !isLast ? <br /> : <span></span>
+          }
+        </code>
+      )
+    })
   }
 
   render() {
     return (
-      <div id={this.props.id}>
-      </div>
+      <Box
+        background="dark-3"
+        pad="small"
+        margin={{horizontal: "medium"}}
+      >
+        <pre>
+          {
+            !!this.props.histories ? this.getTextLine() : ""
+          }
+        </pre>
+      </Box>
     )
   }
 }
