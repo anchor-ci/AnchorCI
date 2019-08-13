@@ -21,11 +21,8 @@ import {
 } from 'grommet';
 
 import {
-  Form,
-  Input,
   Row,
   Col,
-  Icon, 
 } from 'antd';
 
 const SyncButtonStyled = styled(Button)`
@@ -192,34 +189,47 @@ class LoggedInMiddleColumn extends React.Component {
   constructor(props) {
     super(props)
 
-    this.redirect = this.redirect.bind(this)
-
     this.state = {
       history: []
     }
   }
 
-  redirect(history) {
-    this.props.history.push(`/history/${history}`)
-  }
-
   render() {
+    console.log(this.state.history)
     return (
-      <JobAccordion
-        jobs={this.props.repository}
-        history={this.state.history}
-        onClick={(item) => {
-          getLatestHistory(item.id)
-            .then(res => {
-              this.setState({
-                history: res.data
+      <div>
+        {
+          this.props.jobs.length > 0 ?
+          <JobAccordion
+            jobs={this.props.jobs}
+            history={this.state.history}
+            onClick={(item) => {
+              getLatestHistory(item.id)
+                .then(res => {
+                  this.setState({
+                    history: res.data
+                  })
               })
-          })
-            .catch(err => {
-              console.log("HISTORY ERROR")
-          })
-        }}
-      />
+                .catch(err => {
+                  console.log("HISTORY ERROR")
+              })
+            }}
+          /> 
+          :
+          <Box
+            justify="center"
+            alignContent="center"
+            fill="horizontal"
+            style={{textAlign: "center"}}
+          >
+            <Text
+              color="status-error"
+            > 
+              No jobs found!
+            </Text>
+          </Box>
+        }
+      </div>
     )
   }
 }
@@ -286,7 +296,7 @@ export class LoggedInHomepage extends React.Component {
         <Col span={14} style={this.middleColumnStyle}>
           <LoggedInMiddleColumn 
             {...this.props}
-            repository={this.state.jobs}
+            jobs={this.state.jobs}
           />
         </Col>
         <Col span={5} style={this.sideColumnStyle}>

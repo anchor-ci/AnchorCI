@@ -3,13 +3,13 @@ import { parse } from 'query-string';
 import styled from 'styled-components';
 import axios from 'axios';
 import settings from '../settings.js';
-import 'antd/dist/antd.css';
-import { green, red, blue, grey } from "@ant-design/colors"
 import { loggedIn, logout } from '../utils.js';
 import { storeLogin } from '../utils.js';
 import { withRouter, Redirect } from 'react-router';
+import { Anchor } from 'grommet-icons';
 import { 
   Heading, 
+  Text,
   Grid, 
   Box,
   Button,
@@ -17,48 +17,33 @@ import {
   Tabs
 } from 'grommet';
 
-import {
-  Form,
-  Menu, 
-  Icon, 
-  Modal, 
-} from 'antd';
-
-let headerColor = "#00739D"
-
 const NavbarButton = styled(Button)`
   :hover {
-    box-shadow: 0px 2px 0px 2px #555555;
+    box-shadow: 0px 0px 0px 0px #555555;
+    color: #555555;
     background-color: #F8F8F8;
   }
 
-  border: 2px solid #FFFFFF;
-  background-color: #FFFFFF;
+  border: 0px solid #FFFFFF;
+  color: #F8F8F8
 `
 
-function BaseNavbar(props) {
+function Navbar(props) {
   return (
-    <Grid
-      style={{backgroundColor: headerColor}} 
+    <Box
+      background="neutral-3"
       alignContent="center"
-      rows={["xxsmall"]}
-      columns={["full"]}
-      areas={[
-        { name: 'header', start: [0,0], end: [1,0] }
-      ]}
+      justify="center"
+      flex="grow"
     >
-      <Box 
-        fill="horizontal"
-        gridArea='header' 
-        border="bottom"
-        direction="row"
-        basis="small"
-        gap="small"
-      >
-        <Heading style={{color: "white", float:"left"}}> anchor </Heading>
-        {props.children}
-      </Box>
-    </Grid>
+      <Heading
+        style={{color: "#F8F8F8"}}
+        margin="xsmall"
+      > 
+        Anchor CI 
+      </Heading>
+      { loggedIn() ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
+    </Box>
   )
 }
 
@@ -80,29 +65,21 @@ class LoggedInBar extends React.Component {
 
   render() {
     return (
-      <Box direction="row" fill="horizontal">
-        <Box
-          direction="row"
-          justify="start"
-        >
-          <NavbarButton
-            margin="xsmall"
-            gridArea="header"
-            label="Home"
-            onClick={this.goHome}
-          />
-        </Box>
-        <Box
-          direction="row"
-          justify="between"
-        >
-          <NavbarButton
-            margin="xsmall"
-            gridArea="header"
-            label="Logout"
-            onClick={this.handleLogout}
-          />
-        </Box>
+      <Box
+        grow="false"
+        direction="row"
+        margin="xsmall"
+        gap="small"
+      >
+        <NavbarButton
+          label="Home"
+          onClick={this.goHome}
+        />
+        <Text> | </Text>
+        <NavbarButton
+          label="Logout"
+          onClick={this.handleLogout}
+        />
       </Box>
     )
   }
@@ -153,12 +130,5 @@ class LoggedOutBar extends React.Component {
   }
 }
 
-export default function Navbar(props) {
-  return (
-    <BaseNavbar>
-      { loggedIn() ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
-    </BaseNavbar>
-  )
-}
-
 Navbar = withRouter(Navbar);
+export default Navbar;
