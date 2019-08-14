@@ -80,7 +80,9 @@ export default class JobAccordion extends React.Component {
 
   render() {
     return (
-      <Box>
+      <Box
+        margin="small"
+      >
         {
           this.props.jobs.map((job, index) => {
             return (

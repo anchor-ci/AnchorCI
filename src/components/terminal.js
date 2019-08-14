@@ -3,11 +3,11 @@ import { Box } from 'grommet';
 import styled from 'styled-components';
 
 const FailureLine = styled.span`
-  color: red;
+  color: #FF4040;
 `
 
 const SuccessLine = styled.span`
-  color: green;
+  color: #00C781;
 `
 
 const NormalLine = styled.span`
@@ -18,12 +18,18 @@ export class HistoryView extends React.Component {
     super(props)
   }
 
-  getText(line) {
+  getText(line, index) {
     if (line.failed) {
       return <FailureLine> {line.failureText.replace('\n', '')} </FailureLine>
     }
+    
+    let text = line.text.replace('\n', '')
 
-    return <NormalLine> {line.text.replace('\n', '')} </NormalLine>
+    if (line.succeeded && index == this.props.histories.length - 1) {
+      return <SuccessLine> {text} </SuccessLine>
+    }
+
+    return <NormalLine> {text} </NormalLine>
   }
 
   getTextLine() {
@@ -34,7 +40,7 @@ export class HistoryView extends React.Component {
           key={index}
         >
           {
-            this.getText(history)
+            this.getText(history, index)
           }
           {
             !isLast ? <br /> : <span></span>

@@ -4,7 +4,6 @@ import settings from '../settings.js';
 import { getUserId } from '../utils.js';
 import axios from 'axios';
 import { green, red, blue, grey } from "@ant-design/colors"
-import JobList from "../components/job_list.js";
 import RepoCard from "../components/repo_card.js";
 import JobAccordion from "../components/job_accordion.js";
 import { getLatestHistory, getJobsFromRepo } from "../api_calls.js";
@@ -195,7 +194,6 @@ class LoggedInMiddleColumn extends React.Component {
   }
 
   render() {
-    console.log(this.state.history)
     return (
       <div>
         {
@@ -272,6 +270,10 @@ export class LoggedInHomepage extends React.Component {
   getJobsForRepo(repo) {
     getJobsFromRepo(repo)
       .then((res) => {
+        if (this.state.jobInterval) {
+          clearInterval(this.state.jobInterval)
+        }
+
         this.setState({
           jobs: res.data,
           jobInterval: setInterval(() => {
@@ -280,7 +282,9 @@ export class LoggedInHomepage extends React.Component {
         })
     })
       .catch((err) => {
-        // TODO: Add failure case here
+        this.setState({
+          jobs: []
+        })
     })
   }
 
