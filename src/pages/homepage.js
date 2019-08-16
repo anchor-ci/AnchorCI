@@ -6,7 +6,7 @@ import axios from 'axios';
 import { green, red, blue, grey } from "@ant-design/colors"
 import RepoCard from "../components/repo_card.js";
 import JobAccordion from "../components/job_accordion.js";
-import { getLatestHistory, getJobsFromRepo } from "../api_calls.js";
+import { getLatestHistory, getJobsFromRepo, syncRepositories } from "../api_calls.js";
 import styled from "styled-components";
 import { 
   Button, 
@@ -46,26 +46,26 @@ class SyncButton extends React.Component {
   }
 
   syncRepositories() {
-    axios.get(`${settings.syncUrl}/${getUserId()}`)
-    .then(res => {
-      this.setState({
-        text: "Synced"
-      })
+    syncRepositories()
+      .then(res => {
+        this.setState({
+          text: "Synced"
+        })
     })
-    .catch(err => {
-      if (err.response) { 
-        if (err.response.status === 400) {
-          if (err.response.data.filter(item => item !== undefined).length > 0) {
-            this.setState({
-              text: "Synced"
-            })
-          } else {
-            this.setState({
-              text: "Failed"
-            })
+      .catch(err => {
+        if (err.response) { 
+          if (err.response.status === 400) {
+            if (err.response.data.filter(item => item !== undefined).length > 0) {
+              this.setState({
+                text: "Synced"
+              })
+            } else {
+              this.setState({
+                text: "Failed"
+              })
+            }
           }
         }
-      }
     })
   }
 
@@ -143,6 +143,16 @@ class LoggedInLeftColumn extends React.Component {
       // Set up the first repo as selected first
       if (this.state.repos.length > 0 && this.props.onRepoClick) {
         this.props.onRepoClick(this.state.repos[0])
+      }
+
+      if (this.state.repos.length == 0) {
+        syncRepositories()
+          .then(res => {
+            this.setState({repos: res.data})
+        })
+          .catch(err => {
+            console.log("Failed to sync repositories for first time.")
+        })
       }
     })
     .catch((err) => {

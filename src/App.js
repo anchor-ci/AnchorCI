@@ -3,7 +3,7 @@ import Navbar from './components/navbar.js';
 import History from './pages/job.js';
 import Index from './pages/index.js';
 import ProtectedRoute from './components/protected_route.js';
-import { loggedIn } from './utils.js';
+import { loggedIn, tokenIsValid } from './utils.js';
 import { LoggedInHomepage, LoggedOutHomepage } from './pages/homepage.js';
 import { BrowserRouter, Redirect, Route } from "react-router-dom";
 
@@ -14,7 +14,20 @@ const style = {
   padding: "0px"
 }
 
+function preStart() {
+  tokenIsValid()
+    .then(res => {
+      console.log(res)
+  })
+    .catch(err => {
+      // TODO: APP.JS NEED USER VERIFICATION HANDLING
+      console.log("APP.JS NEED USER VERIFICATION HANDLING")
+  })
+}
+
 function App() {
+  preStart()
+
   const homepage = loggedIn() ? LoggedInHomepage : LoggedOutHomepage
 
   return (

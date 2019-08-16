@@ -1,4 +1,16 @@
+import { isValidToken } from './api_calls.js';
+
 const _authTokenKey = 'authToken';
+
+export async function tokenIsValid() {
+  let token = getLoginToken()
+
+  if (!token) {
+    throw new Error("No token stored")
+  }
+
+  return isValidToken(token)
+}
 
 export const getLoginToken = () => {
   return window.localStorage.getItem(_authTokenKey);
