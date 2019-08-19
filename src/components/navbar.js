@@ -42,7 +42,7 @@ function Navbar(props) {
       > 
         Anchor CI 
       </Heading>
-      { props.loggedIn ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
+      { props.loggedin ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
     </Box>
   )
 }
@@ -75,7 +75,6 @@ class LoggedInBar extends React.Component {
           label="Home"
           onClick={this.goHome}
         />
-        <Text> | </Text>
         <NavbarButton
           label="Logout"
           onClick={this.handleLogout}
@@ -118,14 +117,17 @@ class LoggedOutBar extends React.Component {
 
   render() {
     return (
-      <div
-        gridArea="header"
+      <Box
+        grow="false"
+        direction="row"
+        margin="xsmall"
+        gap="small"
       >
         <NavbarButton
           label="Login"
           onClick={this.redirectLogin}
         />
-      </div>
+      </Box>
     )
   }
 }

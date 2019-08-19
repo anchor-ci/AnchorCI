@@ -3,7 +3,7 @@ import Navbar from './components/navbar.js';
 import History from './pages/job.js';
 import Index from './pages/index.js';
 import ProtectedRoute from './components/protected_route.js';
-import { loggedIn, tokenIsValid } from './utils.js';
+import { loggedIn, tokenIsValid, logout } from './utils.js';
 import { LoggedInHomepage, LoggedOutHomepage } from './pages/homepage.js';
 import { BrowserRouter, Redirect, Route } from "react-router-dom";
 
@@ -33,6 +33,9 @@ class App extends React.Component {
         })
     })
       .catch(err => {
+        // Logout is a convient method for forgetting any token that is stored
+        logout()
+
         this.setState({
           loggedIn: false,
           homepage: LoggedOutHomepage

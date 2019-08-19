@@ -5,6 +5,7 @@ import { getUserId } from '../utils.js';
 import axios from 'axios';
 import { green, red, blue, grey } from "@ant-design/colors"
 import RepoCard from "../components/repo_card.js";
+import RightColumn from "../components/right_column.js";
 import JobAccordion from "../components/job_accordion.js";
 import { getLatestHistory, getJobsFromRepo, syncRepositories } from "../api_calls.js";
 import styled from "styled-components";
@@ -166,9 +167,10 @@ class LoggedInLeftColumn extends React.Component {
 
   render() {
     return (
-      <div style={{marginTop: "24px"}}>
+      <div>
         <div style={{marginLeft: "8px", marginRight: "8px"}}>
           <Box
+            margin="small"
             textAlign="center"
             alignContent="end"
             direction="row-responsive"
@@ -263,13 +265,18 @@ export class LoggedInHomepage extends React.Component {
     this.state = {
       repos: [],
       jobs: [],
-      jobInterval: undefined
+      jobInterval: undefined,
+      selectedRepo: undefined
     }
 
     this.setupMiddleColumn = this.setupMiddleColumn.bind(this);
   }
 
   setupMiddleColumn(repo) {
+    this.setState({
+      selectedRepo: repo
+    })
+
     if (this.state.jobInterval) {
       clearInterval(this.state.jobInterval)
     }
@@ -277,8 +284,8 @@ export class LoggedInHomepage extends React.Component {
     this.getJobsForRepo(repo.id)
   }
 
-  getJobsForRepo(repo) {
-    getJobsFromRepo(repo)
+  getJobsForRepo(rid) {
+    getJobsFromRepo(rid)
       .then((res) => {
         if (this.state.jobInterval) {
           clearInterval(this.state.jobInterval)
@@ -287,7 +294,7 @@ export class LoggedInHomepage extends React.Component {
         this.setState({
           jobs: res.data,
           jobInterval: setInterval(() => {
-            this.getJobsForRepo(repo)
+            this.getJobsForRepo(rid)
           }, this.updateJobTimer)
         })
     })
@@ -314,6 +321,10 @@ export class LoggedInHomepage extends React.Component {
           />
         </Col>
         <Col span={5} style={this.sideColumnStyle}>
+          <RightColumn 
+            {...this.props}
+            repository={this.state.selectedRepo}
+          />
         </Col>
       </Row>
     )
