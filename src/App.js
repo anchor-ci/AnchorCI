@@ -14,31 +14,43 @@ const style = {
   padding: "0px"
 }
 
-function preStart() {
-  tokenIsValid()
-    .then(res => {
-      console.log(res)
-  })
-    .catch(err => {
-      // TODO: APP.JS NEED USER VERIFICATION HANDLING
-      console.log("APP.JS NEED USER VERIFICATION HANDLING")
-  })
-}
+class App extends React.Component {
+  constructor(props) {
+    super(props)
 
-function App() {
-  preStart()
+    this.state = {
+      loggedIn: false,
+      homepage: LoggedOutHomepage
+    }
+  }
 
-  const homepage = loggedIn() ? LoggedInHomepage : LoggedOutHomepage
+  componentDidMount() {
+    tokenIsValid()
+      .then(res => {
+        this.setState({
+          loggedIn: true,
+          homepage: LoggedInHomepage
+        })
+    })
+      .catch(err => {
+        this.setState({
+          loggedIn: false,
+          homepage: LoggedOutHomepage
+        })
+    })
+  }
 
-  return (
-    <BrowserRouter>
-      <div style={{height: "100%"}}>
-        <Navbar />
-        <Route exact path="/" component={homepage} />
-        <Route exact path="/history/:historyId" component={History} />
-      </div>
-    </BrowserRouter>
-  );
+  render() {
+    return (
+      <BrowserRouter>
+        <div style={{height: "100%"}}>
+          <Navbar loggedin={this.state.loggedIn} />
+          <Route exact path="/" component={this.state.homepage} />
+          <Route exact path="/history/:historyId" component={History} />
+        </div>
+      </BrowserRouter>
+    )
+  }
 }
 
 export default App;

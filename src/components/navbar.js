@@ -42,7 +42,7 @@ function Navbar(props) {
       > 
         Anchor CI 
       </Heading>
-      { loggedIn() ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
+      { props.loggedIn ? <LoggedInBar {...props} /> : <LoggedOutBar {...props} /> }
     </Box>
   )
 }
