@@ -7,6 +7,7 @@ import { green, red, blue, grey } from "@ant-design/colors"
 import RepoCard from "../components/repo_card.js";
 import RightColumn from "../components/right_column.js";
 import JobAccordion from "../components/job_accordion.js";
+import { BaseButtonStyled } from "../components/kit.js";
 import { getLatestHistory, getJobsFromRepo, syncRepositories } from "../api_calls.js";
 import styled from "styled-components";
 import { 
@@ -24,16 +25,6 @@ import {
   Row,
   Col,
 } from 'antd';
-
-const SyncButtonStyled = styled(Button)`
-  :hover {
-    box-shadow: 0px 0px 0px 0px #555555;
-    background-color: white;
-  }
-
-  display: inline;
-  border: 2px solid #555555;
-`
 
 class SyncButton extends React.Component {
   constructor(props) {
@@ -72,7 +63,7 @@ class SyncButton extends React.Component {
 
   render() {
     return (
-      <SyncButtonStyled
+      <BaseButtonStyled
         label={this.state.text}
         onClick={this.syncRepositories}
       />

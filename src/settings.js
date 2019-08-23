@@ -34,7 +34,7 @@ settings.axios = axiosSettings[settings.env]
 settings.HOME_URL = "/"
 settings.LOGIN_REDIRECT = "/"
 settings.LOGOUT_REDIRECT = "/"
-settings.githubClientId = "8dbaad72c2fb3ec43f8d"
+settings.githubClientId = "Iv1.c42406c3c7776c7d"
 settings.githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${settings.githubClientId}`
 settings.userRepoUrl = `${settings.jobUrl}/repo/user`
 settings.loginUrl = `${settings.authUrl}/auth`
