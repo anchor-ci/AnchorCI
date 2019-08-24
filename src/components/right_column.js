@@ -1,6 +1,7 @@
 import React from 'react';
 import RepoOptions from './repo_options.js';
 import { BaseButtonStyled } from '../components/kit.js';
+import Stats from '../components/repo_stats.js';
 import styled from 'styled-components';
 import {
   Grid,
@@ -15,34 +16,17 @@ const HeadingDivider = styled.hr`
   margin-right: 16px;
 `
 
-class Stats extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
-    return (
-      <div>
-      </div>
-    )
-  }
-}
-
 export default class RightColumn extends React.Component {
   constructor(props) {
     super(props)
     
     this.state = {
-      options: false
+      options: true
     }
   }
 
-  getDisplay() {
-    if (this.state.options) {
-      return <RepoOptions {...this.props} />
-    }
-
-    return <Stats {...this.props} />
+  getStats() {
+    return {}
   }
 
   render() {
@@ -81,7 +65,7 @@ export default class RightColumn extends React.Component {
         </Box>
         <HeadingDivider />
         {
-          this.getDisplay() 
+          this.state.options ? <RepoOptions {...this.props} /> : <Stats {...this.props} stats={this.getStats()} />
         }
       </div>
     )
