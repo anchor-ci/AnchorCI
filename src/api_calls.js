@@ -21,6 +21,10 @@ export const getUser = (uid) => {
   return settings.axios.authInstance.get(`/users/${uid}`)
 }
 
+export const triggerJob = (rid) => {
+  return settings.axios.jobInstance.post(`/repo/${rid}/job`)
+}
+
 export const isValidToken = (token) => {
   let config = {
     headers: {

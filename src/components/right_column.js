@@ -1,4 +1,5 @@
 import React from 'react';
+import { triggerJob } from '../api_calls.js';
 import RepoOptions from './repo_options.js';
 import { BaseButtonStyled } from '../components/kit.js';
 import Stats from '../components/repo_stats.js';
@@ -23,6 +24,16 @@ export default class RightColumn extends React.Component {
     this.state = {
       options: true
     }
+  }
+
+  triggerJob = () => {
+    triggerJob(this.props.repository.id)
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   getStats() {
@@ -57,6 +68,11 @@ export default class RightColumn extends React.Component {
           <BaseButtonStyled
             label="Options"
             onClick={() => { this.setState({options: true}) }}
+          />
+            {/* TODO: Style this button to pop out */}
+          <BaseButtonStyled
+            label="Trigger"
+            onClick={this.triggerJob}
           />
           <BaseButtonStyled
             label="Stats"
